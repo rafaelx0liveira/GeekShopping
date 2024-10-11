@@ -1,6 +1,8 @@
 using AutoMapper;
 using GeekShopping.ProductAPI.Config;
 using GeekShopping.ProductAPI.Model.Context;
+using GeekShopping.ProductAPI.Repository;
+using GeekShopping.ProductAPI.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -24,7 +26,10 @@ builder.Services.AddSingleton(mapper);
     todos os assemblies carregados no domínio da aplicação em busca de classes de mapeamento 
     (classes que herdam de Profile ou implementam um mapeamento manual).
 */
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+// Add repositories and implementations to the DI container
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 // Add services to the container.
 builder.Services.AddControllers();

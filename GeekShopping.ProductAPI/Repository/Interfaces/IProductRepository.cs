@@ -1,6 +1,6 @@
 ﻿using GeekShopping.ProductAPI.Data.ValueObjects;
 
-namespace GeekShopping.ProductAPI.Repository
+namespace GeekShopping.ProductAPI.Repository.Interfaces
 {
     public interface IProductRepository
     {
@@ -8,11 +8,11 @@ namespace GeekShopping.ProductAPI.Repository
 
         Task<ProductVO> FindById(long id);
 
-        Task<ProductVO> Create(ProductVO vo);
+        Task<ProductVO?> Create(ProductVO vo);
 
         Task<ProductVO> Update(ProductVO vo);
 
         Task<bool> Delete(long id);
-        
+
     }
 }
