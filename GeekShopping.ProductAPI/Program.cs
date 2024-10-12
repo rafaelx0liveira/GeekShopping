@@ -11,7 +11,7 @@ using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar a string de conexão e adicionar o DbContext
+// Configure connection to MySQL database
 var connectionString = builder.Configuration.GetSection("MySQLConnection")["MySQLConnectionString"];
 builder.Services.AddDbContext<MySQLContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
