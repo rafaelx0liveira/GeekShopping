@@ -12,7 +12,7 @@ namespace GeekShopping.ProductAPI.Model
         [StringLength(150)]
         public string Name { get; set; }
 
-        [Column("price")]
+        [Column("price", TypeName = "decimal(10,2)")]
         [Required]
         [Range(1, 10000)]
         public decimal Price { get; set; }
