@@ -40,7 +40,7 @@ namespace GeekShopping.Web.Services
             return await response.ReadContentAs<ProductModel>();
         }
 
-        public async Task<ProductModel> UpdateProduct(long id, ProductModel product)
+        public async Task<ProductModel> UpdateProduct(ProductModel product)
         {
             var response = await _client.PutAsJson(_basePath, product);
 

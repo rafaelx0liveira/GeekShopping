@@ -7,7 +7,7 @@ namespace GeekShopping.Web.Services.Interfaces
         Task<IEnumerable<ProductModel>> FindAllProducts();
         Task<ProductModel> FindProductById(long id);
         Task<ProductModel> CreateProduct(ProductModel product);
-        Task<ProductModel> UpdateProduct(long id, ProductModel product);
+        Task<ProductModel> UpdateProduct(ProductModel product);
         Task<bool> DeleteProductById(long id);
     }
 }
