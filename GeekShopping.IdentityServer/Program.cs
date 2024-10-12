@@ -1,4 +1,6 @@
 using GeekShopping.IdentityServer.Configuration;
+using GeekShopping.IdentityServer.Initializer;
+using GeekShopping.IdentityServer.Initializer.Interface;
 using GeekShopping.IdentityServer.Model;
 using GeekShopping.IdentityServer.Model.Context;
 using Microsoft.AspNetCore.Identity;
@@ -19,6 +21,10 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<MySQLContext>().
     AddDefaultTokenProviders();
 
+// Configure Database Initializer
+builder.Services.AddScoped<IDbInitializer, DbInitializer>();
+
+// Configure IdentityServer
 builder.Services.AddIdentityServer(options =>
 {
     options.Events.RaiseErrorEvents = true;
@@ -48,6 +54,13 @@ app.UseRouting();
 app.UseIdentityServer();
 
 app.UseAuthorization();
+
+// Initialize the database
+using (var scope = app.Services.CreateScope()) 
+{
+    var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>(); 
+    dbInitializer.Initialize(); 
+}
 
 app.MapControllerRoute(
     name: "default",
