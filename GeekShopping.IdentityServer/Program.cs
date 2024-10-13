@@ -33,7 +33,7 @@ builder.Services.AddIdentityServer(options =>
     options.Events.RaiseSuccessEvents = true;
     options.EmitStaticAudienceClaim = true;
 }).AddInMemoryIdentityResources(IdentityConfiguration.IdentityResources)
-.AddInMemoryClients(IdentityConfiguration.Clients)
+.AddInMemoryClients(IdentityConfiguration.Clients(builder.Configuration))
 .AddAspNetIdentity<ApplicationUser>()
 .AddDeveloperSigningCredential();
 
