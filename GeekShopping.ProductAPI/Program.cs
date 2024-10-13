@@ -5,6 +5,7 @@ using GeekShopping.ProductAPI.Model.Context;
 using GeekShopping.ProductAPI.Repository;
 using GeekShopping.ProductAPI.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
@@ -64,6 +65,22 @@ builder.Services.AddSwaggerGen(options =>
 // Add controllers
 builder.Services.AddControllers();
 
+// Authentication server URL
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.Authority = builder.Configuration["ServiceUrls:IdentityServer"]; 
+        options.TokenValidationParameters = new TokenValidationParameters{ ValidateAudience = false };
+    });
+
+// Authorization policy
+builder.Services.AddAuthorizationBuilder()
+.AddPolicy("ApiScope", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("scope", "geek_shopping");
+    });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -78,6 +95,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
