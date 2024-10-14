@@ -4,6 +4,22 @@ using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Get the base address for the ProductAPI from the configuration.
+var baseAddress = builder.Configuration["ServiceUrls:ProductAPI"];
+
+// Validate the base address.
+if (string.IsNullOrEmpty(baseAddress))
+{
+    throw new InvalidOperationException("The base address for the ProductAPI is not configured.");
+}
+
+// Add the ProductService to the DI container.
+builder.Services.AddHttpClient<IProductService, ProductService>(client =>
+{
+    // Set the base address of the ProductAPI.
+    client.BaseAddress = new Uri(baseAddress);
+});
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -22,28 +38,17 @@ builder.Services.AddAuthentication(options =>
     options.ClientSecret = builder.Configuration["Authentication:Oidc:ClientSecret"];
 
     options.ResponseType = "code";
-    options.ClaimActions.MapUniqueJsonKey("role", "role", "role");
-    options.ClaimActions.MapUniqueJsonKey("sub", "sub", "sub");
+    options.ClaimActions.MapJsonKey("role", "role", "role");
+    options.ClaimActions.MapJsonKey("sub", "sub", "sub");
     options.TokenValidationParameters.NameClaimType = "name";
     options.TokenValidationParameters.RoleClaimType = "role";
+
+    options.Scope.Add("openid");
+    options.Scope.Add("profile");
+    options.Scope.Add("email");
     options.Scope.Add("geek_shopping");
+
     options.SaveTokens = true;
-});
-
-// Get the base address for the ProductAPI from the configuration.
-var baseAddress = builder.Configuration["ServiceUrls:ProductAPI"];
-
-// Validate the base address.
-if (string.IsNullOrEmpty(baseAddress))
-{
-    throw new InvalidOperationException("The base address for the ProductAPI is not configured.");
-}
-
-// Add the ProductService to the DI container.
-builder.Services.AddHttpClient<IProductService, ProductService>(client =>
-{
-    // Set the base address of the ProductAPI.
-    client.BaseAddress = new Uri(baseAddress);
 });
 
 var app = builder.Build();

@@ -5,6 +5,7 @@ using GeekShopping.IdentityServer.Model;
 using GeekShopping.IdentityServer.Model.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,17 +33,22 @@ builder.Services.AddIdentityServer(options =>
     options.Events.RaiseFailureEvents = true;
     options.Events.RaiseSuccessEvents = true;
     options.EmitStaticAudienceClaim = true;
-}).AddInMemoryIdentityResources(IdentityConfiguration.IdentityResources)
-.AddInMemoryClients(IdentityConfiguration.Clients(builder.Configuration))
-.AddAspNetIdentity<ApplicationUser>()
-.AddDeveloperSigningCredential();
+}).AddInMemoryIdentityResources(
+                        IdentityConfiguration.IdentityResources)
+                    .AddInMemoryApiScopes(IdentityConfiguration.ApiScopes)
+                    .AddInMemoryClients(IdentityConfiguration.Clients(builder.Configuration))
+                    .AddAspNetIdentity<ApplicationUser>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.Use(async (context, next) =>
+    {
+        context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'; connect-src *;");
+        await next();
+    });
 }
 
 app.UseHttpsRedirection();
