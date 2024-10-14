@@ -41,8 +41,8 @@ namespace GeekShopping.IdentityServer.Configuration
                     ClientId = configuration["IdentityServer:Clients:geek_shopping:ClientId"],
                     ClientSecrets = { new Secret(configuration["IdentityServer:Clients:geek_shopping:ClientSecret"].Sha256()) },
                     AllowedGrantTypes = GrantTypes.Code,
-                    RedirectUris = configuration.GetSection("IdentityServer:Clients:geek_shopping:RedirectUris").Get<List<string>>(),
-                    PostLogoutRedirectUris = configuration.GetSection("IdentityServer:Clients:geek_shopping:PostLogoutRedirectUris").Get<List<string>>(),
+                    RedirectUris = {"https://localhost:4430/signin-oidc"},
+                    PostLogoutRedirectUris = {"https://localhost:4430/signout-callback-oidc"},
                     AllowedScopes = configuration.GetSection("IdentityServer:Clients:geek_shopping:AllowedScopes").Get<List<string>>()
                 }
             };

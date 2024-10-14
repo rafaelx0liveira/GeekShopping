@@ -1,3 +1,4 @@
+using Duende.IdentityServer.Services;
 using GeekShopping.IdentityServer.Configuration;
 using GeekShopping.IdentityServer.Initializer;
 using GeekShopping.IdentityServer.Initializer.Interface;
@@ -37,7 +38,8 @@ builder.Services.AddIdentityServer(options =>
                         IdentityConfiguration.IdentityResources)
                     .AddInMemoryApiScopes(IdentityConfiguration.ApiScopes)
                     .AddInMemoryClients(IdentityConfiguration.Clients(builder.Configuration))
-                    .AddAspNetIdentity<ApplicationUser>();
+                    .AddAspNetIdentity<ApplicationUser>()
+                    .AddDeveloperSigningCredential();
 
 var app = builder.Build();
 
