@@ -1,12 +1,6 @@
-﻿using GeekShopping.IdentityServer.Model;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace GeekShopping.IdentityServer.Model.Context
-{
-    public class MySQLContext : IdentityDbContext<ApplicationUser>
-    {
-        public MySQLContext(DbContextOptions<MySQLContext> options) : base(options) { }
+namespace GeekShopping.IdentityServer.Model.Context;
 
-    }
-}
+public class MySQLContext(DbContextOptions<MySQLContext> options) : IdentityDbContext<ApplicationUser>(options) { }

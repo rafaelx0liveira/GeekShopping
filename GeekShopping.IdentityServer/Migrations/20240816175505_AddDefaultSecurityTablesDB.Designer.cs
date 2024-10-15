@@ -12,20 +12,20 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GeekShopping.IdentityServer.Migrations
 {
     [DbContext(typeof(MySQLContext))]
-    [Migration("20241012223941_AddDefaultSecurityTablesOnDB")]
-    partial class AddDefaultSecurityTablesOnDB
+    [Migration("20240816175505_AddDefaultSecurityTablesDB")]
+    partial class AddDefaultSecurityTablesDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("GeekShopping.IdentityServer.Model.ApplicationUser", b =>
+            modelBuilder.Entity("GeekShopping.IdentityServer.Model.Context.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("varchar(255)");
@@ -240,7 +240,7 @@ namespace GeekShopping.IdentityServer.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("GeekShopping.IdentityServer.Model.ApplicationUser", null)
+                    b.HasOne("GeekShopping.IdentityServer.Model.Context.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -249,7 +249,7 @@ namespace GeekShopping.IdentityServer.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("GeekShopping.IdentityServer.Model.ApplicationUser", null)
+                    b.HasOne("GeekShopping.IdentityServer.Model.Context.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -264,7 +264,7 @@ namespace GeekShopping.IdentityServer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GeekShopping.IdentityServer.Model.ApplicationUser", null)
+                    b.HasOne("GeekShopping.IdentityServer.Model.Context.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -273,7 +273,7 @@ namespace GeekShopping.IdentityServer.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("GeekShopping.IdentityServer.Model.ApplicationUser", null)
+                    b.HasOne("GeekShopping.IdentityServer.Model.Context.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

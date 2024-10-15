@@ -1,66 +1,57 @@
 ﻿using GeekShopping.Web.Models;
 using GeekShopping.Web.Services.Interfaces;
 using GeekShopping.Web.Utils;
+using System.Net.Http.Headers;
 
-namespace GeekShopping.Web.Services
+namespace GeekShopping.Web.Services;
+
+public class ProductService : IProductService
 {
-    public class ProductService : IProductService
+    private readonly HttpClient _client;
+    public const string BasePath = "api/v1/product";
+
+    public ProductService(HttpClient client)
     {
-        private readonly HttpClient _client;
-        public const string _basePath = "api/v1/product";
+        _client = client ?? throw new ArgumentNullException(nameof(client));
+    }
 
-        public ProductService(HttpClient client)
-        {
-            _client = client ?? throw new ArgumentNullException(nameof(client));
-        }
+    public async Task<IEnumerable<ProductModel>?> GetAll(string token)
+    {
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await _client.GetAsync(BasePath);
+        return await response.ReadContentAs<List<ProductModel>>();
+    }
 
-        public async Task<IEnumerable<ProductModel>> FindAllProducts()
-        {
-            var response = await _client.GetAsync(_basePath);
+    public async Task<ProductModel?> GetById(long id, string token)
+    {
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await _client.GetAsync($"{BasePath}/{id}");
+        return await response.ReadContentAs<ProductModel>();
+    }
 
-            return await response.ReadContentAs<List<ProductModel>>();
-        }
-
-        public async Task<ProductModel> FindProductById(long id)
-        {
-            var response = await _client.GetAsync($"{_basePath}/{id}");
-
+    public async Task<ProductModel?> Create(ProductModel model, string token)
+    {
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await _client.PostAsJson(BasePath, model);
+        if (response.IsSuccessStatusCode)
             return await response.ReadContentAs<ProductModel>();
-        }
-
-        public async Task<ProductModel> CreateProduct(ProductModel product)
-        {
-            var response = await _client.PostAsJson(_basePath, product);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new HttpRequestException($"Error: {response.ReasonPhrase}");
-            }
-
+        else throw new Exception("Something went wrong when calling API");
+    }
+    public async Task<ProductModel?> Update(ProductModel model, string token)
+    {
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await _client.PutAsJson(BasePath, model);
+        if (response.IsSuccessStatusCode)
             return await response.ReadContentAs<ProductModel>();
-        }
+        else throw new Exception("Something went wrong when calling API");
+    }
 
-        public async Task<ProductModel> UpdateProduct(ProductModel product)
-        {
-            var response = await _client.PutAsJson(_basePath, product);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new HttpRequestException($"Error: {response.ReasonPhrase}");
-            }
-
-            return await response.ReadContentAs<ProductModel>();
-        }
-
-        public async Task<bool> DeleteProductById(long id)
-        {
-            var response = await _client.DeleteAsync($"{_basePath}/{id}");
-
-            if (!response.IsSuccessStatusCode) {
-                throw new HttpRequestException($"Error: {response.ReasonPhrase}");
-            }
-
+    public async Task<bool> Delete(long id, string token)
+    {
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await _client.DeleteAsync($"{BasePath}/{id}");
+        if (response.IsSuccessStatusCode)
             return await response.ReadContentAs<bool>();
-        }
+        else throw new Exception("Something went wrong when calling API");
     }
 }

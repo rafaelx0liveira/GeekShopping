@@ -6,7 +6,7 @@
         <p>Below is the list of applications you have given permission to and the resources they have access to.</p>
     </div>
 
-    @if (Model.Grants.Any() == false)
+    @if (Model.Grants!.Any() == false)
     {
         <div class="row">
             <div class="col-sm-8">
@@ -18,7 +18,7 @@
     }
     else
     {
-        foreach (var grant in Model.Grants)
+        foreach (var grant in Model.Grants!)
         {
             <div class="card">
                 <div class="card-header">
@@ -56,24 +56,24 @@
                             <label>Expires:</label> @grant.Expires.Value.ToString("yyyy-MM-dd")
                         </li>
                     }
-                    @if (grant.IdentityGrantNames.Any())
+                    @if (grant.IdentityGrantNames!.Any())
                     {
                         <li class="list-group-item">
                             <label>Identity Grants</label>
                             <ul>
-                                @foreach (var name in grant.IdentityGrantNames)
+                                @foreach (var name in grant.IdentityGrantNames!)
                                 {
                                     <li>@name</li>
                                 }
                             </ul>
                         </li>
                     }
-                    @if (grant.ApiGrantNames.Any())
+                    @if (grant.ApiGrantNames!.Any())
                     {
                         <li class="list-group-item">
                             <label>API Grants</label>
                             <ul>
-                                @foreach (var name in grant.ApiGrantNames)
+                                @foreach (var name in grant.ApiGrantNames!)
                                 {
                                     <li>@name</li>
                                 }
