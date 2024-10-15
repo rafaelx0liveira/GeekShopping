@@ -15,21 +15,21 @@ public class ProductService : IProductService
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public async Task<IEnumerable<ProductModel>?> GetAll(string token)
+    public async Task<IEnumerable<ProductModel>?> ProductGetAll(string token)
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _client.GetAsync(BasePath);
         return await response.ReadContentAs<List<ProductModel>>();
     }
 
-    public async Task<ProductModel?> GetById(long id, string token)
+    public async Task<ProductModel?> ProductGetById(long id, string token)
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _client.GetAsync($"{BasePath}/{id}");
         return await response.ReadContentAs<ProductModel>();
     }
 
-    public async Task<ProductModel?> Create(ProductModel model, string token)
+    public async Task<ProductModel?> ProductCreate(ProductModel model, string token)
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _client.PostAsJson(BasePath, model);
@@ -37,7 +37,7 @@ public class ProductService : IProductService
             return await response.ReadContentAs<ProductModel>();
         else throw new Exception("Something went wrong when calling API");
     }
-    public async Task<ProductModel?> Update(ProductModel model, string token)
+    public async Task<ProductModel?> ProductUpdate(ProductModel model, string token)
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _client.PutAsJson(BasePath, model);
@@ -46,7 +46,7 @@ public class ProductService : IProductService
         else throw new Exception("Something went wrong when calling API");
     }
 
-    public async Task<bool> Delete(long id, string token)
+    public async Task<bool> ProductDelete(long id, string token)
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _client.DeleteAsync($"{BasePath}/{id}");
