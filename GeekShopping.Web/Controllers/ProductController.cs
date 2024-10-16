@@ -23,7 +23,7 @@ public class ProductController : Controller
         return View(products);
     }
 
-    public IActionResult Create()
+    public IActionResult ProductCreate()
     {
         return View();
     }
@@ -37,7 +37,7 @@ public class ProductController : Controller
             string token = await HttpContext.GetTokenAsync("access_token") ?? string.Empty;
             var response = await _productService.ProductCreate(model, token);
             if (response != null) return RedirectToAction(
-                 nameof(Index));
+                    nameof(ProductIndex));
         }
         return View(model);
     }
@@ -59,7 +59,7 @@ public class ProductController : Controller
             string token = await HttpContext.GetTokenAsync("access_token") ?? string.Empty;
             var response = await _productService.ProductUpdate(model, token);
             if (response != null) return RedirectToAction(
-                 nameof(Index));
+                 nameof(ProductIndex));
         }
         return View(model);
     }
@@ -80,7 +80,7 @@ public class ProductController : Controller
         string token = await HttpContext.GetTokenAsync("access_token") ?? string.Empty;
         var response = await _productService.ProductDelete(model.Id, token);
         if (response) return RedirectToAction(
-                nameof(Index));
+                nameof(ProductIndex));
         return View(model);
     }
 }
