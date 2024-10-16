@@ -52,6 +52,7 @@ public class DbInitializer : IDbInitializer
         _user.CreateAsync(admin, adminPassword).GetAwaiter().GetResult();
         _user.AddToRoleAsync(admin,
             IdentityConfiguration.Admin).GetAwaiter().GetResult();
+
         var adminClaims = _user.AddClaimsAsync(admin, new Claim[]
         {
             new(JwtClaimTypes.Name, $"{admin.FirstName} {admin.LastName}"),
