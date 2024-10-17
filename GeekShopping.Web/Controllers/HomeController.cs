@@ -10,15 +10,20 @@ namespace GeekShopping.Web.Controllers;
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private readonly IProductService _productService;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, 
+        IProductService productService)
     {
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _productService = productService ?? throw new ArgumentNullException(nameof(productService));
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> IndexAsync()
     {
-        return View();
+        var accessToken = await HttpContext.GetTokenAsync("access_token") ?? string.Empty;
+        var products = await _productService.ProductGetAll(accessToken);
+        return View(products);
     }
 
     public IActionResult Privacy()
@@ -36,7 +41,7 @@ public class HomeController : Controller
     {
         var accessToken = await HttpContext.GetTokenAsync("access_token");
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(IndexAsync));
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
