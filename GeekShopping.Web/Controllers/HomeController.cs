@@ -19,11 +19,18 @@ public class HomeController : Controller
         _productService = productService ?? throw new ArgumentNullException(nameof(productService));
     }
 
-    public async Task<IActionResult> IndexAsync()
+    public async Task<IActionResult> Index()
+    {
+        var products = await _productService.ProductGetAll("");
+        return View(products);
+    }
+
+    [Authorize]
+    public async Task<IActionResult> Details(int id)
     {
         var accessToken = await HttpContext.GetTokenAsync("access_token") ?? string.Empty;
-        var products = await _productService.ProductGetAll(accessToken);
-        return View(products);
+        var model = await _productService.ProductGetById(id, accessToken);
+        return View(model);
     }
 
     public IActionResult Privacy()
@@ -41,7 +48,7 @@ public class HomeController : Controller
     {
         var accessToken = await HttpContext.GetTokenAsync("access_token");
 
-        return RedirectToAction(nameof(IndexAsync));
+        return RedirectToAction(nameof(Index));
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
