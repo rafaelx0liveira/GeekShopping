@@ -15,34 +15,34 @@ public class ProductService : IProductService
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public async Task<IEnumerable<ProductModel>?> ProductGetAll(string token)
+    public async Task<IEnumerable<ProductViewModel>?> ProductGetAll(string token)
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _client.GetAsync(BasePath);
-        return await response.ReadContentAs<List<ProductModel>>();
+        return await response.ReadContentAs<List<ProductViewModel>>();
     }
 
-    public async Task<ProductModel?> ProductGetById(long id, string token)
+    public async Task<ProductViewModel?> ProductGetById(long id, string token)
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _client.GetAsync($"{BasePath}/{id}");
-        return await response.ReadContentAs<ProductModel>();
+        return await response.ReadContentAs<ProductViewModel>();
     }
 
-    public async Task<ProductModel?> ProductCreate(ProductModel model, string token)
+    public async Task<ProductViewModel?> ProductCreate(ProductViewModel model, string token)
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _client.PostAsJson(BasePath, model);
         if (response.IsSuccessStatusCode)
-            return await response.ReadContentAs<ProductModel>();
+            return await response.ReadContentAs<ProductViewModel>();
         else throw new Exception("Something went wrong when calling API");
     }
-    public async Task<ProductModel?> ProductUpdate(ProductModel model, string token)
+    public async Task<ProductViewModel?> ProductUpdate(ProductViewModel model, string token)
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _client.PutAsJson(BasePath, model);
         if (response.IsSuccessStatusCode)
-            return await response.ReadContentAs<ProductModel>();
+            return await response.ReadContentAs<ProductViewModel>();
         else throw new Exception("Something went wrong when calling API");
     }
 
