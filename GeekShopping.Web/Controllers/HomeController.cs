@@ -11,12 +11,15 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly IProductService _productService;
+    private readonly ICartService _cartService;
 
     public HomeController(ILogger<HomeController> logger, 
-        IProductService productService)
+        IProductService productService,
+        ICartService cartService)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _productService = productService ?? throw new ArgumentNullException(nameof(productService));
+        _cartService = cartService ?? throw new ArgumentNullException(nameof(cartService));
     }
 
     public async Task<IActionResult> Index()
@@ -30,6 +33,40 @@ public class HomeController : Controller
     {
         var accessToken = await HttpContext.GetTokenAsync("access_token") ?? string.Empty;
         var model = await _productService.ProductGetById(id, accessToken);
+        return View(model);
+    }
+
+    [HttpPost]
+    [ActionName("Details")]
+    [Authorize]
+    public async Task<IActionResult> DetailsPost(ProductViewModel model)
+    {
+        var accessToken = await HttpContext.GetTokenAsync("access_token") ?? string.Empty;
+
+        CartViewModel cart = new()
+        {
+            CartHeader = new()
+            {
+                UserId = User.Claims.Where(u => u.Type == "sub").FirstOrDefault()?.Value
+            },
+        };
+
+        CartDetailViewModel cartDetail = new()
+        {
+            Count = model.Count,
+            ProductId = model.Id,
+            Product = await _productService.ProductGetById(model.Id, accessToken)
+        };
+
+        List<CartDetailViewModel> cartDetailsList = new List<CartDetailViewModel>();
+        
+        cartDetailsList.Add(cartDetail);
+
+        var response = await _cartService.AddItemToCart(cart, accessToken);
+
+        if (response != null)
+            return RedirectToAction(nameof(Index));
+
         return View(model);
     }
 
