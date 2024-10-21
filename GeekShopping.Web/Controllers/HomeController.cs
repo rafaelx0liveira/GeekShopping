@@ -55,7 +55,8 @@ public class HomeController : Controller
         {
             Count = model.Count,
             ProductId = model.Id,
-            Product = await _productService.ProductGetById(model.Id, accessToken)
+            Product = await _productService.ProductGetById(model.Id, accessToken),
+            CartHeader = cart.CartHeader
         };
 
         List<CartDetailViewModel> cartDetailsList = new List<CartDetailViewModel>();
