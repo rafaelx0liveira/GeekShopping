@@ -1,4 +1,3 @@
-using Asp.Versioning;
 using AutoMapper;
 using GeekShopping.ProductAPI.Config;
 using GeekShopping.ProductAPI.Model.Context;
@@ -7,74 +6,57 @@ using GeekShopping.ProductAPI.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure connection to MySQL database
-var connectionString = builder.Configuration.GetSection("MySQLConnection")["MySQLConnectionString"];
-builder.Services.AddDbContext<MySQLContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+var connection = builder.Configuration["MySqlConnection:MySqlConnectionString"];
 
-// Add AutoMapper configuration
+builder.Services.AddDbContext<MySQLContext>(options => options.UseMySql(
+    connection,
+    new MySqlServerVersion(new Version(8, 0, 29)))
+);
+
+
 IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
-
-// Add AutoMapper to the DI container
 builder.Services.AddSingleton(mapper);
-
-// Add services to the container.
-
-/*
-    O parâmetro AppDomain.CurrentDomain.GetAssemblies() instrui o AutoMapper a escanearem 
-    todos os assemblies carregados no domínio da aplicação em busca de classes de mapeamento 
-    (classes que herdam de Profile ou implementam um mapeamento manual).
-*/
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-// Add repositories and implementations to the DI container
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
+builder.Services.AddControllers();
 
-// Add API versioning to the DI container
-builder.Services.AddApiVersioning(options =>
-{
-    options.DefaultApiVersion = new ApiVersion(1, 0);
-    options.AssumeDefaultVersionWhenUnspecified = true;
-    options.ReportApiVersions = true;
-    options.ApiVersionReader = ApiVersionReader.Combine(
-        new UrlSegmentApiVersionReader(),
-        new HeaderApiVersionReader("X-Api-Version")
-    );
-}).AddApiExplorer(options =>
-{
-    options.GroupNameFormat = "'v'VVV";
-    options.SubstituteApiVersionInUrl = true;
-});
-
-// Add versioned API explorer to generate correct Swagger documentation
-builder.Services.AddEndpointsApiExplorer();
-
-// Swagger configuration to support API versioning
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "GeekShopping V1", Version = "v1.0" });
-    options.SwaggerDoc("v2", new OpenApiInfo { Title = "GeekShopping V2", Version = "v2.0" });
-
-    options.EnableAnnotations(); // Enable annotations in Swagger documentation
-
-    // Add JWT Bearer authentication (Pop-up for JWT token)
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
     {
-        Description = @"JWT Authorization header using the Bearer scheme. Example: \"
-        + "Authorization: Bearer {token}\"",
+        options.Authority = "https://localhost:4435/";
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false
+        };
+    });
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("ApiScope", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("scope", "geek_shopping");
+    });
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "GeekShopping.ProductAPI", Version = "v1" });
+    c.EnableAnnotations();
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = @"Enter 'Bearer' [space] and your token!",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer"
     });
 
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
             new OpenApiSecurityScheme
@@ -86,43 +68,19 @@ builder.Services.AddSwaggerGen(options =>
                 },
                 Scheme = "oauth2",
                 Name = "Bearer",
-                In = ParameterLocation.Header
+                In= ParameterLocation.Header
             },
-            new List<string>()
+            new List<string> ()
         }
-    });
+     });
 });
-
-// Add controllers
-builder.Services.AddControllers();
-
-// Authentication server URL
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer("Bearer", options =>
-    {
-        options.Authority = builder.Configuration["ServiceUrls:IdentityServer"]; 
-        options.TokenValidationParameters = new TokenValidationParameters{ ValidateAudience = false };
-    });
-
-// Authorization policy
-builder.Services.AddAuthorizationBuilder()
-.AddPolicy("ApiScope", policy =>
-    {
-        policy.RequireAuthenticatedUser();
-        policy.RequireClaim("scope", "geek_shopping");
-    });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        // Swagger endpoints for each version
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "GeekShopping V1");
-    });
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

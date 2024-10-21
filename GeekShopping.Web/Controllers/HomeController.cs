@@ -7,32 +7,23 @@ using System.Diagnostics;
 
 namespace GeekShopping.Web.Controllers;
 
-public class HomeController : Controller
+public class HomeController(ILogger<HomeController> logger, IProductService productService, ICartService cartService) : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-    private readonly IProductService _productService;
-    private readonly ICartService _cartService;
-
-    public HomeController(ILogger<HomeController> logger, 
-        IProductService productService,
-        ICartService cartService)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _productService = productService ?? throw new ArgumentNullException(nameof(productService));
-        _cartService = cartService ?? throw new ArgumentNullException(nameof(cartService));
-    }
+    private readonly ILogger<HomeController> _logger = logger;
+    private readonly IProductService _productService = productService;
+    private readonly ICartService _cartService = cartService;
 
     public async Task<IActionResult> Index()
     {
-        var products = await _productService.ProductGetAll("");
+        var products = await _productService.GetAll("");
         return View(products);
     }
 
     [Authorize]
     public async Task<IActionResult> Details(int id)
     {
-        var accessToken = await HttpContext.GetTokenAsync("access_token") ?? string.Empty;
-        var model = await _productService.ProductGetById(id, accessToken);
+        string token = await HttpContext.GetTokenAsync("access_token") ?? string.Empty;
+        var model = await _productService.GetById(id, token);
         return View(model);
     }
 
@@ -41,35 +32,30 @@ public class HomeController : Controller
     [Authorize]
     public async Task<IActionResult> DetailsPost(ProductViewModel model)
     {
-        var accessToken = await HttpContext.GetTokenAsync("access_token") ?? string.Empty;
+        string token = await HttpContext.GetTokenAsync("access_token") ?? string.Empty;
 
         CartViewModel cart = new()
         {
-            CartHeader = new()
+            CartHeader = new CartHeaderViewModel
             {
-                UserId = User.Claims.Where(u => u.Type == "sub").FirstOrDefault()?.Value
-            },
+                UserId = User.Claims.Where(u => u.Type == "sub")?.FirstOrDefault()?.Value
+            }
         };
 
         CartDetailViewModel cartDetail = new()
         {
             Count = model.Count,
             ProductId = model.Id,
-            Product = await _productService.ProductGetById(model.Id, accessToken),
-            CartHeader = cart.CartHeader
+            Product = await _productService.GetById(model.Id, token)
         };
 
-        List<CartDetailViewModel> cartDetailsList = new List<CartDetailViewModel>();
-        
-        cartDetailsList.Add(cartDetail);
+        List<CartDetailViewModel> cartDetails = [];
+        cartDetails.Add(cartDetail);
+        cart.ListCartDetail = cartDetails;
 
-        cart.CartDetails = cartDetailsList;
-
-        var response = await _cartService.AddItemToCart(cart, accessToken);
-
+        var response = await _cartService.AddItem(cart, token);
         if (response != null)
             return RedirectToAction(nameof(Index));
-
         return View(model);
     }
 
@@ -78,22 +64,21 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult Logout()
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
     {
-        return SignOut("Cookies", "oidc");
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
     [Authorize]
     public async Task<IActionResult> Login()
     {
         var accessToken = await HttpContext.GetTokenAsync("access_token");
-
         return RedirectToAction(nameof(Index));
     }
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
+    public IActionResult Logout()
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return SignOut("Cookies", "oidc");
     }
 }

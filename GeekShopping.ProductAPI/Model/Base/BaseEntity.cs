@@ -1,12 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace GeekShopping.ProductAPI.Model.Base
+namespace GeekShopping.ProductAPI.Model.Base;
+
+public class BaseEntity
 {
-    public class BaseEntity
-    {
-        [Key]
-        [Column("id")]
-        public long Id { get; set; }
-    }
+    [Key]
+    [Column("id")]
+    public long Id { get; set; }
 }

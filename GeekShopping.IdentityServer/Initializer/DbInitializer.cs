@@ -3,7 +3,6 @@ using GeekShopping.IdentityServer.Model;
 using GeekShopping.IdentityServer.Model.Context;
 using IdentityModel;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 
 namespace GeekShopping.IdentityServer.Initializer;

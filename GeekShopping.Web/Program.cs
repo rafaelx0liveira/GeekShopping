@@ -7,12 +7,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient<IProductService, ProductService>(
     c => c.BaseAddress = new Uri(builder.Configuration["ServiceUrls:ProductAPI"]!)
 );
-
 builder.Services.AddHttpClient<ICartService, CartService>(
     c => c.BaseAddress = new Uri(builder.Configuration["ServiceUrls:CartAPI"]!)
 );
+builder.Services.AddHttpClient<ICouponService, CouponService>(
+    c => c.BaseAddress = new Uri(builder.Configuration["ServiceUrls:CouponAPI"]!)
+);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddAuthentication(options =>
@@ -25,8 +26,8 @@ builder.Services.AddAuthentication(options =>
     {
         options.Authority = builder.Configuration["ServiceUrls:IdentityServer"];
         options.GetClaimsFromUserInfoEndpoint = true;
-        options.ClientId = builder.Configuration["Authentication:Oidc:ClientId"];
-        options.ClientSecret = builder.Configuration["Authentication:Oidc:ClientSecret"];
+        options.ClientId = "geek_shopping";
+        options.ClientSecret = "geek_shopping_secret";
         options.ResponseType = "code";
         options.ClaimActions.MapJsonKey("role", "role", "role");
         options.ClaimActions.MapJsonKey("sub", "sub", "sub");
@@ -38,11 +39,8 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
-{
     app.UseExceptionHandler("/Home/Error");
-}
 
 app.UseHttpsRedirection();
 

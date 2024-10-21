@@ -8,9 +8,7 @@ using System.Security.Claims;
 
 namespace GeekShopping.IdentityServer.Services;
 
-public class ProfileService(UserManager<ApplicationUser> userManager,
-    RoleManager<IdentityRole> roleManager,
-    IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory) : IProfileService
+public class ProfileService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory) : IProfileService
 {
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly RoleManager<IdentityRole> _roleManager = roleManager;

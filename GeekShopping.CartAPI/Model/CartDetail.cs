@@ -1,21 +1,23 @@
 ﻿using GeekShopping.CartAPI.Model.Base;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace GeekShopping.CartAPI.Model
+namespace GeekShopping.CartAPI.Model;
+
+[Table("carrinho_detalhe")]
+public class CartDetail : BaseEntity
 {
-    [Table("cart_detail")]
-    public class CartDetail : BaseEntity
-    {
-        [Column("cart_header_id")]
-        public long CartHeaderId { get; set; }
+    [Column("id_carrinho_cabecalho")]
+    public long CartHeaderId { get; set; }
 
-        [ForeignKey("CartHeaderId")]
-        public virtual CartHeader? CartHeader { get; set; }
-        public long ProductId { get; set; }
-        [ForeignKey("ProductId")]
-        public virtual Product? Product { get; set; }
+    [ForeignKey("CartHeaderId")]
+    public virtual CartHeader? CartHeader { get; set; }
 
-        [Column("count")]
-        public int Count { get; set; }
-    }
+    [Column("id_produto")]
+    public long ProductId { get; set; }
+
+    [ForeignKey("ProductId")]
+    public virtual Product? Product { get; set; }
+
+    [Column("count")]
+    public int Count { get; set; }
 }

@@ -24,9 +24,9 @@ public static class IdentityConfiguration
             new ApiScope(name: "delete", "Delete data."),
         };
 
-   public static IEnumerable<Client> Clients(IConfiguration configuration) =>
-       new List<Client>
-        {
+    public static IEnumerable<Client> Clients(IConfiguration configuration) =>
+        new List<Client>
+         {
             new Client
             {
                 ClientId = configuration["IdentityServer:Clients:client:ClientId"],
@@ -43,5 +43,5 @@ public static class IdentityConfiguration
                     PostLogoutRedirectUris = {"https://localhost:4430/signout-callback-oidc"},
                     AllowedScopes = configuration.GetSection("IdentityServer:Clients:geek_shopping:AllowedScopes").Get<List<string>>()
             }
-        };
+         };
 }

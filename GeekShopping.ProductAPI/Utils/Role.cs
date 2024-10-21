@@ -1,8 +1,7 @@
-﻿namespace GeekShopping.ProductAPI.Utils
+﻿namespace GeekShopping.ProductAPI.Utils;
+
+public class Role
 {
-    public static class Role
-    {
-        public const string AdminRole = "Admin";
-        public const string ClientRole = "Client";
-    }
+    public const string Admin = "Admin";
+    public const string Client = "Client";
 }

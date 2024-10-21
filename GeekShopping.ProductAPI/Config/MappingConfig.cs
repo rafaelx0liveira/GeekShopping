@@ -2,25 +2,16 @@
 using GeekShopping.ProductAPI.Data.ValueObjects;
 using GeekShopping.ProductAPI.Model;
 
-namespace GeekShopping.ProductAPI.Config
+namespace GeekShopping.ProductAPI.Config;
+
+public class MappingConfig
 {
-    public class MappingConfig
+    public static MapperConfiguration RegisterMaps()
     {
-        public static MapperConfiguration RegisterMaps()
+        var mappingConfig = new MapperConfiguration(config =>
         {
-            var mappingConfig = new MapperConfiguration(config =>
-            {
-                // Mapeamento de ProductVO para Product
-                config.CreateMap<ProductVO, Product>();
-
-                // Mapeamento de Product para ProductVO
-                config.CreateMap<Product, ProductVO>();
-            });
-
-            // Valida a configuração do AutoMapper
-            mappingConfig.AssertConfigurationIsValid();
-
-            return mappingConfig;
-        }
+            config.CreateMap<ProductVO, Product>().ReverseMap();
+        });
+        return mappingConfig;
     }
 }
