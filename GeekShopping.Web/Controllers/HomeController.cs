@@ -62,6 +62,8 @@ public class HomeController : Controller
         
         cartDetailsList.Add(cartDetail);
 
+        cart.CartDetails = cartDetailsList;
+
         var response = await _cartService.AddItemToCart(cart, accessToken);
 
         if (response != null)

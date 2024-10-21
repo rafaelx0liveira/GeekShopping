@@ -8,24 +8,19 @@ namespace GeekShopping.CartAPI.Config
     {
         public static MapperConfiguration RegisterMaps()
         {
-            var mappingConfig = new MapperConfiguration(config =>
-            {
-                // Mapping ProductVO to Product
-                config.CreateMap<ProductVO, Product>().ReverseMap(); // ReverseMap for two-way mapping
+            var mappingConfig = new MapperConfiguration(config => {
+                config.CreateMap<ProductVO, Product>();
+                config.CreateMap<Product, ProductVO>();
 
-                // Mapping CartHeaderVO to CartHeader
-                config.CreateMap<CartHeaderVO, CartHeader>().ReverseMap();
+                config.CreateMap<CartHeaderVO, CartHeader>();
+                config.CreateMap<CartHeader, CartHeaderVO>();
 
-                // Mapping CartDetailVO to CartDetail
-                config.CreateMap<CartDetailVO, CartDetail>().ReverseMap();
+                config.CreateMap<CartDetailVO, CartDetail>();
+                config.CreateMap<CartDetail, CartDetailVO>();
 
-                // Mapping CartVO to Cart
-                config.CreateMap<CartVO, Cart>().ReverseMap();
-
+                config.CreateMap<CartVO, Cart>();
+                config.CreateMap<Cart, CartVO>();
             });
-
-            // Validate the mapping configuration
-            mappingConfig.AssertConfigurationIsValid();
 
             return mappingConfig;
         }

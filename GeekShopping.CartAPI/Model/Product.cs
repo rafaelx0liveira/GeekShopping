@@ -13,7 +13,7 @@ namespace GeekShopping.CartAPI.Model
         [Column("name")]
         [Required]
         [StringLength(150)]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [Column("price", TypeName = "decimal(10,2)")]
         [Required]
@@ -22,14 +22,14 @@ namespace GeekShopping.CartAPI.Model
 
         [Column("description")]
         [StringLength(1000)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [Column("category_name")]
         [StringLength(100)]
-        public string CategoryName { get; set; }
+        public string? CategoryName { get; set; }
 
         [Column("image_url")]
         [StringLength(300)]
-        public string ImageURL { get; set; }
+        public string? ImageURL { get; set; }
     }
 }

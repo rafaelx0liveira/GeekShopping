@@ -12,8 +12,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configure connection to MySQL database
 var connectionString = builder.Configuration.GetSection("MySQLConnection")["MySQLConnectionString"];
+
+//builder.Services.AddDbContext<MySQLContext>(options =>
+//    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
 builder.Services.AddDbContext<MySQLContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+           .EnableSensitiveDataLogging());
 
 // Add AutoMapper configuration
 IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
@@ -115,19 +120,18 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        // Swagger endpoints for each version
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "GeekShopping V1");
-    });
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "GeekShopping.CartAPI V1"));
 }
 
 app.UseHttpsRedirection();
 
+app.UseRouting();
 app.UseAuthentication();
-
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
 app.Run();

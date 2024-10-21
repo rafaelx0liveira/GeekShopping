@@ -33,7 +33,7 @@ namespace GeekShopping.CartAPI.Controllers.V1
 
         [MapToApiVersion("1.0")]
         [HttpPost("add-cart")]
-        public async Task<ActionResult<CartVO>> AddCart([FromBody] CartVO cartVO)
+        public async Task<ActionResult<CartVO>> AddCart(CartVO cartVO)
         {
             var cart = await _cartRepository.SaveOrUpdateCart(cartVO);
 
@@ -44,7 +44,7 @@ namespace GeekShopping.CartAPI.Controllers.V1
 
         [MapToApiVersion("1.0")]
         [HttpPut("update-cart")]
-        public async Task<ActionResult<CartVO>> UpdateCart([FromBody] CartVO cartVO)
+        public async Task<ActionResult<CartVO>> UpdateCart(CartVO cartVO)
         {
             var cart = await _cartRepository.SaveOrUpdateCart(cartVO);
 

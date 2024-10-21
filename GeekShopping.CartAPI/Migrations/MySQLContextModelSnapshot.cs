@@ -21,7 +21,7 @@ namespace GeekShopping.CartAPI.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("GeekShopping.CartAPI.Controllers.Model.CartDetail", b =>
+            modelBuilder.Entity("GeekShopping.CartAPI.Model.CartDetail", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -31,7 +31,8 @@ namespace GeekShopping.CartAPI.Migrations
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long>("CartHeaderId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("cart_header_id");
 
                     b.Property<int>("Count")
                         .HasColumnType("int")
@@ -49,7 +50,7 @@ namespace GeekShopping.CartAPI.Migrations
                     b.ToTable("cart_detail");
                 });
 
-            modelBuilder.Entity("GeekShopping.CartAPI.Controllers.Model.CartHeader", b =>
+            modelBuilder.Entity("GeekShopping.CartAPI.Model.CartHeader", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -59,12 +60,10 @@ namespace GeekShopping.CartAPI.Migrations
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("CouponCode")
-                        .IsRequired()
                         .HasColumnType("longtext")
                         .HasColumnName("coupon_code");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("longtext")
                         .HasColumnName("user_id");
 
@@ -73,26 +72,23 @@ namespace GeekShopping.CartAPI.Migrations
                     b.ToTable("cart_header");
                 });
 
-            modelBuilder.Entity("GeekShopping.CartAPI.Controllers.Model.Product", b =>
+            modelBuilder.Entity("GeekShopping.CartAPI.Model.Product", b =>
                 {
                     b.Property<long>("Id")
                         .HasColumnType("bigint")
                         .HasColumnName("id");
 
                     b.Property<string>("CategoryName")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)")
                         .HasColumnName("category_name");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("varchar(1000)")
                         .HasColumnName("description");
 
                     b.Property<string>("ImageURL")
-                        .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("varchar(300)")
                         .HasColumnName("image_url");
@@ -112,15 +108,15 @@ namespace GeekShopping.CartAPI.Migrations
                     b.ToTable("product");
                 });
 
-            modelBuilder.Entity("GeekShopping.CartAPI.Controllers.Model.CartDetail", b =>
+            modelBuilder.Entity("GeekShopping.CartAPI.Model.CartDetail", b =>
                 {
-                    b.HasOne("GeekShopping.CartAPI.Controllers.Model.CartHeader", "CartHeader")
+                    b.HasOne("GeekShopping.CartAPI.Model.CartHeader", "CartHeader")
                         .WithMany()
                         .HasForeignKey("CartHeaderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GeekShopping.CartAPI.Controllers.Model.Product", "Product")
+                    b.HasOne("GeekShopping.CartAPI.Model.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)

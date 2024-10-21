@@ -20,9 +20,9 @@ namespace GeekShopping.CartAPI.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    user_id = table.Column<string>(type: "longtext", nullable: false)
+                    user_id = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    coupon_code = table.Column<string>(type: "longtext", nullable: false)
+                    coupon_code = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -39,11 +39,11 @@ namespace GeekShopping.CartAPI.Migrations
                     name = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    description = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: false)
+                    description = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    category_name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                    category_name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    image_url = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: false)
+                    image_url = table.Column<string>(type: "varchar(300)", maxLength: 300, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -58,7 +58,7 @@ namespace GeekShopping.CartAPI.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    CartHeaderId = table.Column<long>(type: "bigint", nullable: false),
+                    cart_header_id = table.Column<long>(type: "bigint", nullable: false),
                     ProductId = table.Column<long>(type: "bigint", nullable: false),
                     count = table.Column<int>(type: "int", nullable: false)
                 },
@@ -66,8 +66,8 @@ namespace GeekShopping.CartAPI.Migrations
                 {
                     table.PrimaryKey("PK_cart_detail", x => x.id);
                     table.ForeignKey(
-                        name: "FK_cart_detail_cart_header_CartHeaderId",
-                        column: x => x.CartHeaderId,
+                        name: "FK_cart_detail_cart_header_cart_header_id",
+                        column: x => x.cart_header_id,
                         principalTable: "cart_header",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -81,9 +81,9 @@ namespace GeekShopping.CartAPI.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_cart_detail_CartHeaderId",
+                name: "IX_cart_detail_cart_header_id",
                 table: "cart_detail",
-                column: "CartHeaderId");
+                column: "cart_header_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_cart_detail_ProductId",
