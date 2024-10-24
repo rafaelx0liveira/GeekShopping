@@ -1,4 +1,5 @@
 using GeekShopping.OrderAPI.Model.Context;
+using GeekShopping.OrderAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -9,7 +10,14 @@ var connection = builder.Configuration["MySqlConnection:MySqlConnectionString"];
 
 builder.Services.AddDbContext<MySQLContext>(options => options.UseMySql(connection, ServerVersion.AutoDetect(connection)));
 
-//builder.Services.AddScoped<ICartRepository, CartRepository>();
+// Creating the DbContextOptionsBuilder
+var dbBuilder = new DbContextOptionsBuilder<MySQLContext>();
+dbBuilder.UseMySql(connection, ServerVersion.AutoDetect(connection));
+
+// Registering the repository as a singleton
+// Singleton because we want to use the same instance of the repository for all requests
+// Like this, we avoid creating a new instance of the repository for each request
+builder.Services.AddSingleton(new OrderRepository(dbBuilder.Options));
 
 //builder.Services.AddSingleton<IRabbitMQMessageSender, RabbitMQMessageSender>();
 
