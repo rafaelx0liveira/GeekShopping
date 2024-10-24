@@ -1,3 +1,4 @@
+using GeekShopping.OrderAPI.MessageConsumer;
 using GeekShopping.OrderAPI.Model.Context;
 using GeekShopping.OrderAPI.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +20,13 @@ dbBuilder.UseMySql(connection, ServerVersion.AutoDetect(connection));
 // Like this, we avoid creating a new instance of the repository for each request
 builder.Services.AddSingleton(new OrderRepository(dbBuilder.Options));
 
-//builder.Services.AddSingleton<IRabbitMQMessageSender, RabbitMQMessageSender>();
+/*
+    Because consumer RabbitMQCheckout implements BackgroundService, it must be registered as a 
+    background service so that ASP.NET Core can manage its continuous execution throughout the application lifecycle. 
+    By registering it with AddHostedService, ASP.NET Core ensures that your service starts and stops correctly along 
+    with the application, allowing it to consume messages from RabbitMQ while the application is running.    
+*/
+builder.Services.AddHostedService<RabbitMQCheckoutConsumer>();
 
 builder.Services.AddControllers();
 
