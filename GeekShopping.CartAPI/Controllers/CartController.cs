@@ -62,6 +62,8 @@ public class CartController(ICartRepository repository) : ControllerBase
     [HttpPost("checkout")]
     public async Task<ActionResult<CheckoutHeaderVO>> Checkout(CheckoutHeaderVO vo)
     {
+        if(vo?.UserId == null) return BadRequest("UserId is required!");
+
         var cart = await _repository.GetByUserId(vo.UserId!);
         if (cart == null) return NotFound();
         vo.ListCartDetail = cart.ListCartDetail;
