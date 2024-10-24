@@ -6,11 +6,18 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GeekShopping.Web.Controllers;
 
-public class CartController(IProductService productService, ICartService cartService, ICouponService couponService) : Controller
+public class CartController : Controller
 {
-    private readonly IProductService _productService = productService;
-    private readonly ICartService _cartService = cartService;
-    private readonly ICouponService _couponService = couponService;
+    private readonly IProductService _productService;
+    private readonly ICartService _cartService;
+    private readonly ICouponService _couponService;
+
+    public CartController(IProductService productService, ICartService cartService, ICouponService couponService)
+    {
+        _productService = productService ?? throw new ArgumentNullException(nameof(productService));
+        _cartService = cartService ?? throw new ArgumentNullException(nameof(cartService));
+        _couponService = couponService ?? throw new ArgumentNullException(nameof(couponService));
+    }
 
     [Authorize]
     public async Task<IActionResult> Index()
