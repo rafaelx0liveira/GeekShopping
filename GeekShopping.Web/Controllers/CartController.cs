@@ -100,7 +100,15 @@ public class CartController : Controller
 
         var response = await _cartService.Checkout(model.CartHeader!, token);
 
-        if (response != null) return RedirectToAction(nameof(Confirmation));
+        if (response != null && response.GetType() == typeof(string)) // if response is "precondition failed"
+        {
+            TempData["Error"] = response;
+            return RedirectToAction(nameof(Checkout));
+        }
+        else if (response != null) { 
+            return RedirectToAction(nameof(Confirmation)); 
+        }
+
         return View(model);
     }
 
