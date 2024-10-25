@@ -89,9 +89,9 @@ public class CartController: ControllerBase
 
         if (!string.IsNullOrEmpty(vo.CouponCode))
         {
-            CouponVO coupon = await _couponRepository.GetByCode(vo.CouponCode, token);
+            CouponVO? coupon = await _couponRepository.GetByCode(vo.CouponCode, token.Replace("Bearer ", ""));
 
-            if(vo.DiscountAmount != coupon.DiscountAmount)
+            if (vo.DiscountAmount != coupon!.DiscountAmount)
             {
                 return StatusCode(412); // Precondition Failed, the coupon discount amount is different from the cart discount amount
             }
