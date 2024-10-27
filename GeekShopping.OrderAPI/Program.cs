@@ -1,5 +1,7 @@
 using GeekShopping.OrderAPI.MessageConsumer;
 using GeekShopping.OrderAPI.Model.Context;
+using GeekShopping.OrderAPI.RabbitMQSender;
+using GeekShopping.OrderAPI.RabbitMQSender.Interface;
 using GeekShopping.OrderAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -27,6 +29,8 @@ builder.Services.AddSingleton(new OrderRepository(dbBuilder.Options));
     with the application, allowing it to consume messages from RabbitMQ while the application is running.    
 */
 builder.Services.AddHostedService<RabbitMQCheckoutConsumer>();
+
+builder.Services.AddSingleton<IRabbitMQMessageSender, RabbitMQMessageSender>();
 
 builder.Services.AddControllers();
 
