@@ -1,6 +1,7 @@
 ﻿
 using GeekShopping.OrderAPI.Messages;
 using GeekShopping.OrderAPI.Model;
+using GeekShopping.OrderAPI.RabbitMQSender.Interface;
 using GeekShopping.OrderAPI.Repository;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -15,27 +16,32 @@ namespace GeekShopping.OrderAPI.MessageConsumer
     */
     public class RabbitMQCheckoutConsumer : BackgroundService
     {
+        private IRabbitMQMessageSender _rabbitMQMessageSender;
         private readonly OrderRepository _orderRepository;
         private readonly IConfiguration _configuration;
         private readonly string _hostName;
         private readonly string _userName;
         private readonly string _password;
-        private readonly string _queueName;
+        private readonly string _checkoutQueueName;
+        private readonly string _paymentQueueName;
         private IConnection _connection;
         private IModel _channel;
 
         public RabbitMQCheckoutConsumer(
+            IRabbitMQMessageSender rabbitMQMessageSender,
             OrderRepository orderRepository,
             IConfiguration configuration)
         {
             _orderRepository = orderRepository;
+            _rabbitMQMessageSender = rabbitMQMessageSender;
 
             _configuration = configuration;
 
             _hostName = _configuration["RabbitMQ:HostName"] ?? throw new ArgumentNullException("RabbitMQ HostName is missing");
             _userName = _configuration["RabbitMQ:UserName"] ?? throw new ArgumentNullException("RabbitMQ UserName is missing");
             _password = _configuration["RabbitMQ:Password"] ?? throw new ArgumentNullException("RabbitMQ Password is missing");
-            _queueName = _configuration["RabbitMQ:QueueName"] ?? throw new ArgumentNullException("RabbitMQ QueueName is missing");
+            _checkoutQueueName = _configuration["RabbitMQ:CheckoutQueueName"] ?? throw new ArgumentNullException("RabbitMQ QueueName is missing");
+            _paymentQueueName = _configuration["RabbitMQ:PaymentQueueName"] ?? throw new ArgumentNullException("RabbitMQ QueueName is missing");
 
             var factory = new ConnectionFactory
             {
@@ -46,7 +52,7 @@ namespace GeekShopping.OrderAPI.MessageConsumer
 
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
-            _channel.QueueDeclare(queue: _queueName,
+            _channel.QueueDeclare(queue: _checkoutQueueName,
                                  durable: false,
                                  exclusive: false,
                                  autoDelete: false,
@@ -64,7 +70,7 @@ namespace GeekShopping.OrderAPI.MessageConsumer
                 ProcessOrder(vo).GetAwaiter().GetResult();
                 _channel.BasicAck(evt.DeliveryTag, false); // Remove the message from the queue
             };
-            _channel.BasicConsume(_queueName, false, consumer); 
+            _channel.BasicConsume(_checkoutQueueName, false, consumer); 
             return Task.CompletedTask;
         }
 
@@ -103,6 +109,28 @@ namespace GeekShopping.OrderAPI.MessageConsumer
             }
 
             await _orderRepository.AddOrder(order);
+
+            PaymentVO paymentVO = new()
+            {
+                Name = order.FirstName + " " + order.LastName,
+                CardNumber = order.CardNumber,
+                CVV = order.CVV,
+                ExpiryMonthYear = order.ExpiryMonthYear,
+                OrderId = order.Id,
+                PurchaseAmount = order.PurchaseAmount,
+                Email = order.Email
+            };
+
+            try
+            {
+                _rabbitMQMessageSender.SendMessage(paymentVO, _paymentQueueName);
+
+            }
+            catch (Exception)
+            {
+                // TASK: Log exception
+                throw;
+            }
         }
     }
 }

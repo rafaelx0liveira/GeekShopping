@@ -14,7 +14,7 @@ public class CartController: ControllerBase
     private readonly ICouponRepository _couponRepository;
     private readonly IRabbitMQMessageSender _rabbitMQMessageSender;
     private readonly IConfiguration _configuration;
-    private readonly string _queueName;
+    private readonly string _checkoutQueueName;
 
     public CartController(ICartRepository cartRepository, 
         IRabbitMQMessageSender rabbitMQMessageSender,
@@ -26,7 +26,7 @@ public class CartController: ControllerBase
         _rabbitMQMessageSender = rabbitMQMessageSender;
         _configuration = configuration;
 
-        _queueName = _configuration["RabbitMQ:QueueName"] ?? throw new ArgumentNullException("RabbitMQ QueueName is missing");
+        _checkoutQueueName = _configuration["RabbitMQ:CheckoutQueueName"] ?? throw new ArgumentNullException("RabbitMQ QueueName is missing");
     }
 
     [HttpGet("GetByUserId/{userId}")]
@@ -101,7 +101,7 @@ public class CartController: ControllerBase
         vo.DateTime = DateTime.Now;
 
         // RabbitMQ logic
-        _rabbitMQMessageSender.SendMessage(vo, _queueName);
+        _rabbitMQMessageSender.SendMessage(vo, _checkoutQueueName);
 
         return Ok(vo);
     }

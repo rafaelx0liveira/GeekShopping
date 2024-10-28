@@ -9,6 +9,16 @@
     }
   },
   "profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:4440;http://localhost:4441",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
     "GeekShopping.ProductAPI": {
       "commandName": "Project",
       "dotnetRunMessages": true,
@@ -21,6 +31,7 @@
     },
     "IIS Express": {
       "commandName": "IISExpress",
+      "applicationUrl": "https://localhost:4440;http://localhost:4441",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
