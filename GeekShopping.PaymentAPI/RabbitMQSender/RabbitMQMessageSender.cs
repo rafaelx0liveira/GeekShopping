@@ -14,6 +14,7 @@ namespace GeekShopping.PaymentAPI.RabbitMQSender
         private readonly string _userName;
         private readonly string _password;
         private IConnection _connection;
+        private const string ExchangeName = "FanoutPaymentUpdateExchange";
 
 
         public RabbitMQMessageSender(IConfiguration configuration)
@@ -26,22 +27,22 @@ namespace GeekShopping.PaymentAPI.RabbitMQSender
             _password = _configuration["RabbitMQ:Password"] ?? throw new ArgumentNullException("RabbitMQ Password is missing");
         }
 
-        public void SendMessage(BaseMessage baseMessage, string queueName)
+        public void SendMessage(BaseMessage baseMessage)
         {
 
             if (ConnectionExists())
             {
                 using var channel = _connection.CreateModel();
-                channel.QueueDeclare(queue: queueName,
-                                     durable: false,
-                                     exclusive: false,
-                                     autoDelete: false,
-                                     arguments: null);
+                channel.ExchangeDeclare(
+                    exchange: ExchangeName, 
+                    type: ExchangeType.Fanout,
+                    durable: false // Durable false means that the exchange will not be recreated when the RabbitMQ server restarts
+                    );
 
                 byte[] body = GetMessageAsByteArray(baseMessage);
 
-                channel.BasicPublish(exchange: "",
-                                     routingKey: queueName,
+                channel.BasicPublish(exchange: ExchangeName,
+                                     routingKey: "",
                                      basicProperties: null,
                                      body: body);
             }
