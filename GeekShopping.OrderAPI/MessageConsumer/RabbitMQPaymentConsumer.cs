@@ -22,8 +22,11 @@ namespace GeekShopping.OrderAPI.MessageConsumer
         private readonly string _userName;
         private readonly string _password;
         private readonly string _orderPaymentResultQueueName;
-        private readonly string _exchangeName;
-        string _queueName;
+        private readonly string _exchangeName; 
+        private readonly string _directExchangeName;
+        private readonly string _paymentEmailUpdateQueueName;
+        private readonly string _paymentOrderUpdateQueueName;
+        //string _queueName; // The name of the queue for exchange fanout
         private IConnection _connection;
         private IModel _channel;
 
@@ -41,6 +44,11 @@ namespace GeekShopping.OrderAPI.MessageConsumer
             _orderPaymentResultQueueName = _configuration["RabbitMQ:OrderPaymentResultQueueName"] ?? throw new ArgumentNullException("RabbitMQ OrderPaymentResultQueueName is missing");
             _exchangeName = _configuration["RabbitMQ:ExchangeFanoutName"] ?? throw new ArgumentNullException("RabbitMQ ExchangeFanoutName is missing");
 
+            _directExchangeName = _configuration["RabbitMQ:ExchangeDirectName"] ?? throw new ArgumentNullException("RabbitMQ ExchangeDirectName is missing");
+
+            _paymentEmailUpdateQueueName = _configuration["RabbitMQ:PaymentEmailUpdateQueueName"] ?? throw new ArgumentNullException("RabbitMQ PaymentEmailUpdateQueueName is missing");
+            _paymentOrderUpdateQueueName = _configuration["RabbitMQ:PaymentOrderUpdateQueueName"] ?? throw new ArgumentNullException("RabbitMQ PaymentOrderUpdateQueueName is missing");
+
             var factory = new ConnectionFactory
             {
                 HostName = _hostName,
@@ -50,17 +58,41 @@ namespace GeekShopping.OrderAPI.MessageConsumer
 
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
+
+            // Declare the exchange fanout
+            //_channel.ExchangeDeclare(
+            //    exchange: _exchangeName,
+            //    type: ExchangeType.Fanout
+            //);
+
+            //_queueName = _channel.QueueDeclare().QueueName; // Create a queue with a random name and return the name
+
+            //_channel.QueueBind(
+            //    queue: _queueName,
+            //    exchange: _exchangeName,
+            //    routingKey: ""
+            //);
+
+            // Declare the exchange direct
             _channel.ExchangeDeclare(
-                exchange: _exchangeName,
-                type: ExchangeType.Fanout
+                exchange: _directExchangeName,
+                type: ExchangeType.Direct
             );
 
-            _queueName = _channel.QueueDeclare().QueueName; // Create a queue with a random name and return the name
+            // Declare the queue for the payment email update
+            _channel.QueueDeclare(
+                queue: _paymentOrderUpdateQueueName,
+                durable: false,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null
+            );
 
+            // Bind the queue for the payment email update
             _channel.QueueBind(
-                queue: _queueName,
-                exchange: _exchangeName,
-                routingKey: ""
+                queue: _paymentOrderUpdateQueueName,
+                exchange: _directExchangeName,
+                routingKey: "PaymentOrder"
             );
 
         }
@@ -76,7 +108,7 @@ namespace GeekShopping.OrderAPI.MessageConsumer
                 UpdatePaymentStatus(vo).GetAwaiter().GetResult();
                 _channel.BasicAck(evt.DeliveryTag, false); // Remove the message from the queue
             };
-            _channel.BasicConsume(_queueName, false, consumer); 
+            _channel.BasicConsume(_paymentOrderUpdateQueueName, false, consumer); 
             return Task.CompletedTask;
         }
 
