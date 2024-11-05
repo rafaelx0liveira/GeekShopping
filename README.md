@@ -43,7 +43,7 @@ Este projeto é uma implementação de uma arquitetura de microsserviços com fo
 
 ## Arquitetura
 
-![Diagrama da Arquitetura](diagrama-de-arquitetura.jpg)
+![Diagrama da Arquitetura](./Docs/diagrama-de-arquitetura.jpg)
 
 A arquitetura é baseada em **microsserviços desacoplados** que se comunicam através de um **API Gateway** e um **bus de mensagens**. Todos os serviços estão configurados para execução em **containers Docker**, permitindo escalabilidade e facilidade de manutenção.
 
