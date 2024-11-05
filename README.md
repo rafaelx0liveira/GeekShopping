@@ -28,6 +28,7 @@ Este repositório implementa uma arquitetura de microsserviços utilizando **.NE
     - [Gateway e Infraestrutura](#gateway-e-infraestrutura)
     - [Serviços](#serviços-1)
   - [Fluxo de Dados e Comunicação](#fluxo-de-dados-e-comunicação)
+    - [Tipos de Exchanges](#tipos-de-exchanges)
   - [Autenticação e Autorização](#autenticação-e-autorização)
     - [Provedor de Identidade](#provedor-de-identidade)
   - [Observabilidade e Monitoramento](#observabilidade-e-monitoramento)
@@ -206,6 +207,21 @@ A comunicação entre os serviços ocorre de duas maneiras:
 
 - **APIGateway com Ocelot**: Centraliza o roteamento de requisições HTTP, garantindo que clientes e usuários interajam com uma única API.
 - **RabbitMQ**: Facilita a comunicação assíncrona e baseada em eventos entre microsserviços, permitindo desacoplamento e resiliência.
+
+Claro! Vou incluir informações sobre os tipos de exchanges que você desenvolveu, como o **fanout** e o **direct**, na documentação do seu projeto. Aqui está um exemplo de como você pode documentar isso:
+
+
+### Tipos de Exchanges
+
+No projeto, foram implementados dois tipos de exchanges no RabbitMQ, que são fundamentais para o roteamento de mensagens:
+
+1. **Fanout Exchange**:
+    - **Descrição**: O fanout exchange roteia mensagens para todas as filas que estão ligadas a ele, sem considerar as regras de roteamento. Esse tipo de exchange é ideal para sistemas de broadcast, onde a mesma mensagem deve ser enviada a vários consumidores.
+    - **Uso**: Quando uma mensagem é publicada em uma fanout exchange, todas as filas associadas recebem uma cópia da mensagem, permitindo que múltiplos consumidores processam a mesma informação simultaneamente.
+
+2. **Direct Exchange**:
+    - **Descrição**: O direct exchange roteia mensagens para filas específicas com base em uma chave de roteamento exata. As mensagens são enviadas a filas que possuem uma ligação com a exchange e correspondem à chave de roteamento fornecida.
+    - **Uso**: Esse tipo de exchange é útil quando é necessário direcionar mensagens a filas específicas, permitindo um controle mais refinado sobre como as mensagens são distribuídas entre os consumidores.
 
 ## Autenticação e Autorização
 
