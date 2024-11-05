@@ -46,7 +46,7 @@ Este projeto é uma implementação de uma arquitetura de microsserviços com fo
 
 ![Diagrama da Arquitetura](./Docs/diagrama-de-arquitetura.jpg)
 
-A arquitetura é baseada em **microsserviços desacoplados** que se comunicam através de um **API Gateway** e um **bus de mensagens**. Todos os serviços estão configurados para execução em **containers Docker**, permitindo escalabilidade e facilidade de manutenção.
+A arquitetura é baseada em **microsserviços desacoplados** que se comunicam através de um **API Gateway** e um **bus de mensagens**.
 
 **Principais componentes**:
 - **API Gateway (Ocelot)**: Ponto de entrada para os clientes, roteando as solicitações para os serviços adequados.
@@ -174,7 +174,7 @@ Obs.: Possível dar zoom na imagem para melhor visualização.
 
 - **ASP.NET Core** (para desenvolvimento de APIs REST)
 - **.NET 8** (base para desenvolvimento de serviços)
-- **Docker** (para containerização dos serviços)
+- **Docker** (para containerização do serviço do RabbitMQ)
 - **RabbitMQ** (mensageria entre os microsserviços)
 - **MySQL** (persistência de dados, gerenciado com MySQL Workbench)
 - **IdentityServer4** (provedor de autenticação e autorização centralizado)
