@@ -102,7 +102,7 @@ Obs.: Possível dar zoom na imagem para melhor visualização.
 
 ### Diagrama de classe da camada de Message Bus
 
-![alt text](./Docs/Diagrama-de-classe-message-bus/diagrama-de-classe-message-bus.png)
+![alt text](./Docs/diagrama-de-classe-message-bus/diagrama-de-classe-message-bus.png)
 
 ### Diagrama de classe da camada de Processador de Pagamentos
 
