@@ -1,6 +1,6 @@
 # Projeto: Arquitetura de Microsserviços com .NET 8 e ASP.NET Core
 
-Este repositório implementa uma arquitetura de microsserviços utilizando **.NET 8**, **ASP.NET Core**, **Docker**, **Ocelot** como API Gateway e várias outras ferramentas de integração. O projeto segue as melhores práticas para construção de sistemas escaláveis e descentralizados, ideal para aplicações modernas de alta disponibilidade.
+Este repositório implementa uma arquitetura de microsserviços utilizando **.NET 8**, **ASP.NET Core**, **Docker**, **Ocelot** como API Gateway, **IdentityServer4** e várias outras ferramentas de integração. O projeto segue as melhores práticas para construção de sistemas escaláveis e descentralizados, ideal para aplicações modernas de alta disponibilidade.
 
 ## Sumário
 
