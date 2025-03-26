@@ -1,286 +1,254 @@
-# Projeto: Arquitetura de Microsserviços com .NET 8 e ASP.NET Core
+# Project: Microservices Architecture with .NET 8 and ASP.NET Core
 
-Este repositório implementa uma arquitetura de microsserviços utilizando **.NET 8**, **ASP.NET Core**, **Docker**, **Ocelot** como API Gateway, **IdentityServer4** e várias outras ferramentas de integração. O projeto segue as melhores práticas para construção de sistemas escaláveis e descentralizados, ideal para aplicações modernas de alta disponibilidade.
+This repository implements a microservices architecture using **.NET 8**, **ASP.NET Core**, **Docker**, **Ocelot** as the API Gateway, **IdentityServer4**, and several other integration tools. The project follows best practices for building scalable and decentralized systems, ideal for modern high-availability applications.
 
-## Sumário
+## Table of Contents
 
-- [Projeto: Arquitetura de Microsserviços com .NET 8 e ASP.NET Core](#projeto-arquitetura-de-microsserviços-com-net-8-e-aspnet-core)
-  - [Sumário](#sumário)
-  - [Visão Geral](#visão-geral)
-  - [Arquitetura](#arquitetura)
-  - [Diagrama de classe](#diagrama-de-classe)
-    - [Diagrama de classe da camada Web](#diagrama-de-classe-da-camada-web)
-      - [Controladores](#controladores)
-      - [Modelos](#modelos)
-      - [Serviços](#serviços)
-      - [Utilitários](#utilitários)
-    - [Diagrama de classe da camada de Message Bus](#diagrama-de-classe-da-camada-de-message-bus)
-    - [Diagrama de classe da camada de Processador de Pagamentos](#diagrama-de-classe-da-camada-de-processador-de-pagamentos)
-    - [Diagrama de classe da API de Carrinho de Compras](#diagrama-de-classe-da-api-de-carrinho-de-compras)
-    - [Diagrama de classe da API de Cupons](#diagrama-de-classe-da-api-de-cupons)
-    - [Diagrama de classe do Serviço de E-mail](#diagrama-de-classe-do-serviço-de-e-mail)
-    - [Diagrama de classe IdentityServer](#diagrama-de-classe-identityserver)
-    - [Diagrama de classe da API de Pedidos](#diagrama-de-classe-da-api-de-pedidos)
-    - [Diagrama de classe da API de Pagamentos](#diagrama-de-classe-da-api-de-pagamentos)
-    - [Diagrama de classe da API de Produtos](#diagrama-de-classe-da-api-de-produtos)
-  - [Tecnologias Utilizadas](#tecnologias-utilizadas)
-  - [Microsserviços](#microsserviços)
-    - [Gateway e Infraestrutura](#gateway-e-infraestrutura)
-    - [Serviços](#serviços-1)
-  - [Fluxo de Dados e Comunicação](#fluxo-de-dados-e-comunicação)
-    - [Tipos de Exchanges](#tipos-de-exchanges)
-  - [Autenticação e Autorização](#autenticação-e-autorização)
-    - [Provedor de Identidade](#provedor-de-identidade)
-  - [Observabilidade e Monitoramento](#observabilidade-e-monitoramento)
-  - [Como Executar o Projeto](#como-executar-o-projeto)
-    - [Pré-requisitos](#pré-requisitos)
-    - [Passo a Passo](#passo-a-passo)
-    - [Testando as APIs](#testando-as-apis)
-  - [Contribuição](#contribuição)
+- [Project: Microservices Architecture with .NET 8 and ASP.NET Core](#project-microservices-architecture-with-net-8-and-aspnet-core)
+  - [Table of Contents](#table-of-contents)
+  - [Project Overview](#project-overview)
+  - [Architecture](#architecture)
+  - [Class Diagram](#class-diagram)
+    - [Web Layer Class Diagram](#web-layer-class-diagram)
+      - [Controllers](#controllers)
+      - [Models](#models)
+      - [Services](#services)
+      - [Utilities](#utilities)
+    - [Message Bus Layer Diagram](#message-bus-layer-diagram)
+    - [Payments Processor Layer Diagram](#payments-processor-layer-diagram)
+    - [Cart API Diagram](#cart-api-diagram)
+    - [Coupon API Diagram](#coupon-api-diagram)
+    - [Email Service Diagram](#email-service-diagram)
+    - [IdentityServer Diagram](#identityserver-diagram)
+    - [Order API Diagram](#order-api-diagram)
+    - [Payment API Diagram](#payment-api-diagram)
+    - [Product API Diagram](#product-api-diagram)
+  - [Technologies Used](#technologies-used)
+  - [Microservices](#microservices)
+    - [Gateway and Infrastructure](#gateway-and-infrastructure)
+    - [Services](#services-1)
+  - [Data Flow and Communication](#data-flow-and-communication)
+    - [Exchange Types](#exchange-types)
+  - [Authentication and Authorization](#authentication-and-authorization)
+    - [Identity Provider](#identity-provider)
+  - [Observability and Monitoring](#observability-and-monitoring)
+  - [How to Run the Project](#how-to-run-the-project)
+    - [Prerequisites](#prerequisites)
+    - [Step-by-Step](#step-by-step)
+    - [Testing the APIs](#testing-the-apis)
+  - [Contributing](#contributing)
 
-## Visão Geral
+## Project Overview
 
-Este projeto é uma implementação de uma arquitetura de microsserviços com foco em **escalabilidade** e **baixa acoplamento entre os serviços**. Ele fornece uma base robusta para construir e gerenciar microsserviços de forma fácil, com comunicação segura, autenticação centralizada e monitoramento integrado.
+This project implements a microservices architecture focused on **scalability** and **loose coupling between services**. It provides a solid foundation for building and managing microservices with secure communication, centralized authentication, and integrated monitoring.
 
-## Arquitetura
+## Architecture
 
-![Diagrama da Arquitetura](./Docs/diagrama-de-arquitetura.jpg)
+![Architecture Diagram](./Docs/diagrama-de-arquitetura.jpg)
 
-A arquitetura é baseada em **microsserviços desacoplados** que se comunicam através de um **API Gateway** e um **bus de mensagens**.
+The architecture is based on **decoupled microservices** that communicate through an **API Gateway** and a **message bus**.
 
-**Principais componentes**:
-- **API Gateway (Ocelot)**: Ponto de entrada para os clientes, roteando as solicitações para os serviços adequados.
-- **Microsserviços**: Implementados em .NET 8, cada um responsável por uma parte específica da aplicação.
-- **Bus de Mensagens (RabbitMQ)**: Integração e comunicação entre microsserviços.
-- **Autenticação**: Centralizada com **IdentityServer4**.
-- **Monitoramento e Observabilidade**: Stack de monitoramento para garantir confiabilidade em produção.
+**Key components**:
+- **API Gateway (Ocelot)**: Entry point for clients, routing requests to appropriate services.
+- **Microservices**: Built with .NET 8, each responsible for a specific application domain.
+- **Message Bus (RabbitMQ)**: Enables integration and communication between services.
+- **Authentication**: Centralized via **IdentityServer4**.
+- **Monitoring and Observability**: Monitoring stack ensures production reliability.
 
-## Diagrama de classe
+## Class Diagram
 
-O diagrama de classe representa a estrutura dos microsserviços e a relação entre eles:
+The class diagram shows the structure of the microservices and their relationships:
 
-### Diagrama de classe da camada Web
+### Web Layer Class Diagram
 
-Obs.: Possível dar zoom na imagem para melhor visualização.
+Note: Zoom in on the image for better viewing.
 
-![alt text](./Docs/Diagrama-de-classe-web/diagrama-de-classe-web.png)
+![Web Diagram](./Docs/Diagrama-de-classe-web/diagrama-de-classe-web.png)
 
-#### Controladores
+#### Controllers
 
-![alt text](./Docs/Diagrama-de-classe-web/Controller/CartController.png)
+![CartController](./Docs/Diagrama-de-classe-web/Controller/CartController.png)  
+![HomeController](./Docs/Diagrama-de-classe-web/Controller/HomeController.png)  
+![ProductController](./Docs/Diagrama-de-classe-web/Controller/ProductController.png)
 
-![alt text](./Docs/Diagrama-de-classe-web/Controller/HomeController.png)
+#### Models
 
-![alt text](./Docs/Diagrama-de-classe-web/Controller/ProductController.png)
+![CartDetailViewModel](./Docs/Diagrama-de-classe-web/Models/CartDetailViewModel.png)  
+![CartHeaderViewModel](./Docs/Diagrama-de-classe-web/Models/CartHeaderViewModel.png)  
+![CartViewModel](./Docs/Diagrama-de-classe-web/Models/CartViewModel.png)  
+![CouponViewModel](./Docs/Diagrama-de-classe-web/Models/CouponViewModel.png)  
+![ErrorViewModel](./Docs/Diagrama-de-classe-web/Models/ErrorViewModel.png)  
+![ProductViewModel](./Docs/Diagrama-de-classe-web/Models/ProductViewModel.png)
 
-#### Modelos
+#### Services
 
-![alt text](./Docs/Diagrama-de-classe-web/Models/CartDetailViewModel.png)
+![CartService](./Docs/Diagrama-de-classe-web/Services/CartService.png)  
+![CouponService](./Docs/Diagrama-de-classe-web/Services/CouponService.png)  
+![ProductService](./Docs/Diagrama-de-classe-web/Services/ProductService.png)
 
-![alt text](./Docs/Diagrama-de-classe-web/Models/CartHeaderViewModel.png)
+#### Utilities
 
-![alt text](./Docs/Diagrama-de-classe-web/Models/CartViewModel.png)
+![HttpClientExtensions](./Docs/Diagrama-de-classe-web/Utils/HttpClientExtensions.png)  
+![Role](./Docs/Diagrama-de-classe-web/Utils/Role.png)
 
-![alt text](./Docs/Diagrama-de-classe-web/Models/CouponViewModel.png)
+### Message Bus Layer Diagram
 
-![alt text](./Docs/Diagrama-de-classe-web/Models/ErrorViewModel.png)
+![Message Bus Diagram](./Docs/diagrama-de-classe-message-bus/diagrama-de-classe-message-bus.png)
 
-![alt text](./Docs/Diagrama-de-classe-web/Models/ProductViewModel.png)
+### Payments Processor Layer Diagram
 
-#### Serviços
+![Payments Processor](./Docs/diagrama-de-classe-processor-payments/diagrama-de-classe-processor-payments.png)
 
-![alt text](./Docs/Diagrama-de-classe-web/Services/CartService.png)
+### Cart API Diagram
 
-![alt text](./Docs/Diagrama-de-classe-web/Services/CouponService.png)
+![Cart API](./Docs/diagrama-de-classe-cart-api/diagrama-de-classe-cart-api.png)  
+![CartController](./Docs/diagrama-de-classe-cart-api/CartController.png)  
+![MessageSender](./Docs/diagrama-de-classe-cart-api/rabbitMQMessageSender.png)  
+![CartRepository](./Docs/diagrama-de-classe-cart-api/CartRepository.png)  
+![CouponRepository](./Docs/diagrama-de-classe-cart-api/CouponRepository.png)
 
-![alt text](./Docs/Diagrama-de-classe-web/Services/ProductService.png)
+### Coupon API Diagram
 
-#### Utilitários
+![Coupon API](./Docs/diagrama-de-classe-coupon-api/diagrama-de-classe-coupon-api.png)  
+![CouponController](./Docs/diagrama-de-classe-coupon-api/CouponController.png)  
+![CouponRepository](./Docs/diagrama-de-classe-coupon-api/CouponRepository.png)
 
-![alt text](./Docs/Diagrama-de-classe-web/Utils/HttpClientExtensions.png)
+### Email Service Diagram
 
-![alt text](./Docs/Diagrama-de-classe-web/Utils/Role.png)
+![Email](./Docs/diagrama-de-classe-email/diagrama-de-classe-email.png)  
+![PaymentConsumer](./Docs/diagrama-de-classe-email/rabbitMQMessagePaymentConsumer.png)  
+![EmailRepository](./Docs/diagrama-de-classe-email/EmailRepository.png)
 
-### Diagrama de classe da camada de Message Bus
+### IdentityServer Diagram
 
-![alt text](./Docs/diagrama-de-classe-message-bus/diagrama-de-classe-message-bus.png)
+![IdentityServer](./Docs/diagrama-de-classe-identity-server/diagrama-de-classe-identity-server.png)
 
-### Diagrama de classe da camada de Processador de Pagamentos
+### Order API Diagram
 
-![alt text](./Docs/diagrama-de-classe-processor-payments/diagrama-de-classe-processor-payments.png)
+![Order API](./Docs/diagrama-de-classe-order-api/diagrama-de-classe-order-api.png)  
+![CheckoutConsumer](./Docs/diagrama-de-classe-order-api/rabbitMQCheckoutConsumer.png)  
+![PaymentConsumer](./Docs/diagrama-de-classe-order-api/rabbitMQPaymentConsumer.png)  
+![MessageSender](./Docs/diagrama-de-classe-order-api/rabbitMQMessageSender.png)  
+![OrderRepository](./Docs/diagrama-de-classe-order-api/OrderRepository.png)
 
-### Diagrama de classe da API de Carrinho de Compras
+### Payment API Diagram
 
-![alt text](./Docs/diagrama-de-classe-cart-api/diagrama-de-classe-cart-api.png)
+![Payment API](./Docs/diagrama-de-classe-payment-api/diagrama-de-classe-payment-api.png)  
+![PaymentConsumer](./Docs/diagrama-de-classe-payment-api/rabbitMQPaymentConsumer.png)  
+![MessageSender](./Docs/diagrama-de-classe-payment-api/rabbitMQMessageSender.png)
 
-![alt text](./Docs/diagrama-de-classe-cart-api/CartController.png)
+### Product API Diagram
 
-![alt text](./Docs/diagrama-de-classe-cart-api/rabbitMQMessageSender.png)
+![Product API](./Docs/diagrama-de-classe-product-api/diagrama-de-classe-product-api.png)  
+![ProductController](./Docs/diagrama-de-classe-product-api/ProductController.png)  
+![ProductRepository](./Docs/diagrama-de-classe-product-api/ProductRepository.png)
 
-![alt text](./Docs/diagrama-de-classe-cart-api/CartRepository.png)
+## Technologies Used
 
-![alt text](./Docs/diagrama-de-classe-cart-api/CouponRepository.png)
-
-### Diagrama de classe da API de Cupons
-
-![alt text](./Docs/diagrama-de-classe-coupon-api/diagrama-de-classe-coupon-api.png)
-
-![alt text](./Docs/diagrama-de-classe-coupon-api/CouponController.png)
-
-![alt text](./Docs/diagrama-de-classe-coupon-api/CouponRepository.png)
-
-### Diagrama de classe do Serviço de E-mail
-
-![alt text](./Docs/diagrama-de-classe-email/diagrama-de-classe-email.png)
-
-![alt text](./Docs/diagrama-de-classe-email/rabbitMQMessagePaymentConsumer.png)
-
-![alt text](./Docs/diagrama-de-classe-email/EmailRepository.png)
-
-### Diagrama de classe IdentityServer
-
-![alt text](./Docs/diagrama-de-classe-identity-server/diagrama-de-classe-identity-server.png)
-
-### Diagrama de classe da API de Pedidos
-
-![alt text](./Docs/diagrama-de-classe-order-api/diagrama-de-classe-order-api.png)
-
-![alt text](./Docs/diagrama-de-classe-order-api/rabbitMQCheckoutConsumer.png)
-
-![alt text](./Docs/diagrama-de-classe-order-api/rabbitMQPaymentConsumer.png)
-
-![alt text](./Docs/diagrama-de-classe-order-api/rabbitMQMessageSender.png)
-
-![alt text](./Docs/diagrama-de-classe-order-api/OrderRepository.png)
-
-### Diagrama de classe da API de Pagamentos
-
-![alt text](./Docs/diagrama-de-classe-payment-api/diagrama-de-classe-payment-api.png)
-
-![alt text](./Docs/diagrama-de-classe-payment-api/rabbitMQPaymentConsumer.png)
-
-![alt text](./Docs/diagrama-de-classe-payment-api/rabbitMQMessageSender.png)
-
-### Diagrama de classe da API de Produtos
-
-![alt text](./Docs/diagrama-de-classe-product-api/diagrama-de-classe-product-api.png)
-
-![alt text](./Docs/diagrama-de-classe-product-api/ProductController.png)
-
-![alt text](./Docs/diagrama-de-classe-product-api/ProductRepository.png)
-
-
-## Tecnologias Utilizadas
-
-- **ASP.NET Core** (para desenvolvimento de APIs REST)
-- **.NET 8** (base para desenvolvimento de serviços)
-- **Docker** (para containerização do serviço do RabbitMQ)
-- **RabbitMQ** (mensageria entre os microsserviços)
-- **MySQL** (persistência de dados, gerenciado com MySQL Workbench)
-- **IdentityServer4** (provedor de autenticação e autorização centralizado)
+- **ASP.NET Core** (for building REST APIs)
+- **.NET 8** (service development base)
+- **Docker** (to containerize RabbitMQ and services)
+- **RabbitMQ** (messaging between services)
+- **MySQL** (data persistence, managed with MySQL Workbench)
+- **IdentityServer4** (centralized authentication and authorization)
 - **Ocelot** (API Gateway)
-- **Swagger** (documentação das APIs)
+- **Swagger** (API documentation)
 
-## Microsserviços
+## Microservices
 
-### Gateway e Infraestrutura
+### Gateway and Infrastructure
 
-1. **APIGateway**: Implementado com **Ocelot** para centralizar as requisições e roteamento para os microsserviços.
-2. **MessageBus**: Serviço de bus de mensagens para comunicação entre microsserviços.
-3. **PaymentsProcessor**: Processador de pagamentos responsável por validar e processar transações de pagamento.
+1. **APIGateway** – Uses **Ocelot** to centralize and route HTTP requests.  
+2. **MessageBus** – Message bus service for microservice communication.  
+3. **PaymentsProcessor** – Handles payment validation and processing.
 
-### Serviços
+### Services
 
-1. **CartAPI**: API de gerenciamento de carrinho de compras.
-2. **CouponAPI**: API para gerenciamento e validação de cupons de desconto.
-3. **Email**: Serviço de envio de e-mails para notificações transacionais.
-4. **IdentityServer**: Serviço de autenticação e autorização, utilizando **IdentityServer4**.
-5. **OrderAPI**: API de gerenciamento de pedidos.
-6. **PaymentAPI**: API de processamento de pagamentos.
-7. **ProductAPI**: API de gerenciamento de produtos.
+1. **CartAPI** – Manages shopping cart operations.  
+2. **CouponAPI** – Manages and validates discount coupons.  
+3. **Email** – Sends transactional email notifications.  
+4. **IdentityServer** – Authentication and authorization using **IdentityServer4**.  
+5. **OrderAPI** – Manages order creation and retrieval.  
+6. **PaymentAPI** – Processes payments.  
+7. **ProductAPI** – Manages product data.
 
-Cada microsserviço possui sua **própria base de dados MySQL** e é independente, garantindo o isolamento de falhas e possibilitando escalabilidade individual.
+Each microservice has its **own MySQL database** and is fully independent, ensuring fault isolation and individual scalability.
 
-## Fluxo de Dados e Comunicação
+## Data Flow and Communication
 
-A comunicação entre os serviços ocorre de duas maneiras:
+Service communication occurs in two ways:
 
-- **APIGateway com Ocelot**: Centraliza o roteamento de requisições HTTP, garantindo que clientes e usuários interajam com uma única API.
-- **RabbitMQ**: Facilita a comunicação assíncrona e baseada em eventos entre microsserviços, permitindo desacoplamento e resiliência.
+- **Ocelot API Gateway** – Centralizes and routes HTTP requests, enabling client interaction via a single endpoint.
+- **RabbitMQ** – Enables asynchronous, event-driven communication for decoupling and resilience.
 
-Claro! Vou incluir informações sobre os tipos de exchanges que você desenvolveu, como o **fanout** e o **direct**, na documentação do seu projeto. Aqui está um exemplo de como você pode documentar isso:
+### Exchange Types
 
+This project uses two RabbitMQ exchange types for message routing:
 
-### Tipos de Exchanges
+1. **Fanout Exchange**  
+   - **Description**: Broadcasts messages to all bound queues, ignoring routing keys. Ideal for sending the same message to multiple consumers.
+2. **Direct Exchange**  
+   - **Description**: Routes messages to queues with exact routing key matches. Useful for targeted message delivery.
 
-No projeto, foram implementados dois tipos de exchanges no RabbitMQ, que são fundamentais para o roteamento de mensagens:
+## Authentication and Authorization
 
-1. **Fanout Exchange**:
-    - **Descrição**: O fanout exchange roteia mensagens para todas as filas que estão ligadas a ele, sem considerar as regras de roteamento. Esse tipo de exchange é ideal para sistemas de broadcast, onde a mesma mensagem deve ser enviada a vários consumidores.
-    - **Uso**: Quando uma mensagem é publicada em uma fanout exchange, todas as filas associadas recebem uma cópia da mensagem, permitindo que múltiplos consumidores processam a mesma informação simultaneamente.
+The system uses **IdentityServer4** for centralized authentication, issuing **JWT tokens** to securely authorize access between services.
 
-2. **Direct Exchange**:
-    - **Descrição**: O direct exchange roteia mensagens para filas específicas com base em uma chave de roteamento exata. As mensagens são enviadas a filas que possuem uma ligação com a exchange e correspondem à chave de roteamento fornecida.
-    - **Uso**: Esse tipo de exchange é útil quando é necessário direcionar mensagens a filas específicas, permitindo um controle mais refinado sobre como as mensagens são distribuídas entre os consumidores.
+### Identity Provider
 
-## Autenticação e Autorização
+1. **Users and Roles** – User and role management for access control.  
+2. **Microservice Integration** – Each service validates JWT tokens to enforce auth rules.
 
-A aplicação utiliza **IdentityServer4** para autenticação centralizada, fornecendo **tokens JWT** para garantir acesso seguro entre microsserviços.
+## Observability and Monitoring
 
-### Provedor de Identidade
+Monitoring and logging are implemented to track system activity in production, with optional integration into tools like Prometheus and Grafana for metrics and dashboards.
 
-1. **Usuários e Funções**: Gerenciamento de usuários e funções para controle de acesso.
-2. **Integração com Microsserviços**: Cada microsserviço valida o token JWT para assegurar autenticação e autorização.
+## How to Run the Project
 
-## Observabilidade e Monitoramento
+### Prerequisites
 
-Para monitorar e rastrear o sistema em produção, foram implementadas soluções de monitoramento e logging, com possibilidade de integração com ferramentas como Prometheus e Grafana para coleta e visualização de métricas.
-
-## Como Executar o Projeto
-
-### Pré-requisitos
-
-- **Docker e Docker Compose**
+- **Docker & Docker Compose**
 - **MySQL Workbench**
-- **Visual Studio 2022** ou outra IDE compatível com .NET 8
+- **Visual Studio 2022** (or compatible .NET 8 IDE)
 - **RabbitMQ**
 
-### Passo a Passo
+### Step-by-Step
 
-1. Clone o repositório:
+1. Clone the repository:
 
-    ```bash
-        git clone https://github.com/rafaelx0liveira/GeekShopping.git
-        cd seu-repositorio
-    ```
+   ```bash
+   git clone https://github.com/rafaelx0liveira/GeekShopping.git
+   cd your-repo
+   ```
 
-2. Execute os containers usando Docker Compose:
+2. Start containers using Docker Compose:
 
-    ```bash
-        docker-compose up -d
-    ```
+   ```bash
+   docker-compose up -d
+   ```
 
-3. Acesse a aplicação no endereço [https://localhost:4430](https://localhost:4430).
+3. Access the application at [https://localhost:4430](https://localhost:4430)
 
-### Testando as APIs
+### Testing the APIs
 
-Cada microsserviço possui uma documentação com Swagger disponível:
+Each service provides Swagger documentation:
 
 - **APIGateway**: `https://localhost:4480`
 - **CartAPI**: `https://localhost:4445/swagger`
 - **CouponAPI**: `https://localhost:4450/swagger`
-- **Email Service**: `https://localhost:4460/swagger`
+- **Email**: `https://localhost:4460/swagger`
 - **IdentityServer**: `https://localhost:4435`
 - **OrderAPI**: `http://localhost:4455/swagger`
 - **PaymentAPI**: `http://localhost:5109/swagger`
 - **ProductAPI**: `https://localhost:4440/swagger`
 
-## Contribuição
+## Contributing
 
-Contribuições são bem-vindas! Para contribuir:
+Contributions are welcome! To contribute:
 
-1. Faça um fork do projeto.
-2. Crie uma branch para suas alterações: `git checkout -b minha-feature`.
-3. Faça o commit das alterações: `git commit -m 'Minha nova feature'`.
-4. Envie para o repositório: `git push origin minha-feature`.
-5. Abra um Pull Request para revisão.
+1. Fork the project.  
+2. Create a feature branch: `git checkout -b my-feature`  
+3. Commit your changes: `git commit -m 'My new feature'`  
+4. Push to your fork: `git push origin my-feature`  
+5. Open a Pull Request for review.
+
